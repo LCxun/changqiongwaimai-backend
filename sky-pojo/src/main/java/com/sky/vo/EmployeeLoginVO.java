@@ -15,6 +15,9 @@ import java.io.Serializable;
 @AllArgsConstructor
 @ApiModel(description = "员工登录返回的数据格式")
 public class EmployeeLoginVO implements Serializable {
+    // 服务于Swagger
+    // ApiModel 描述pojo类的作用是什么
+    // ApiModelProperty 描述类里面字段的作用
 
     @ApiModelProperty("主键值")
     private Long id;
