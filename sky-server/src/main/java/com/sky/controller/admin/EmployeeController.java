@@ -124,4 +124,24 @@ public class EmployeeController {
         return Result.success();
     }
 
+    @GetMapping("/{id}")
+    @ApiOperation("员工查询接口")
+    public Result<Employee> getById(@PathVariable Long id){
+        log.info("员工查询接口：{}", id);
+
+        Employee employee = employeeService.getById(id);
+
+        return Result.success(employee);
+    }
+
+    @PutMapping
+    @ApiOperation("员工信息修改接口")
+    public Result update(@RequestBody EmployeeDTO employeeDTO){
+        log.info("员工信息修改接口：{}", employeeDTO);
+
+        employeeService.update(employeeDTO);
+
+        return Result.success();
+    }
+
 }
