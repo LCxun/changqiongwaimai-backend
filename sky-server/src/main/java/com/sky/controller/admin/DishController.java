@@ -3,6 +3,7 @@ package com.sky.controller.admin;
 
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
+import com.sky.entity.Dish;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.DishService;
@@ -11,9 +12,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/admin/dish")
@@ -24,6 +27,9 @@ public class DishController {
     @Autowired
     private DishService dishService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @PostMapping
     @ApiOperation("新增菜品接口")
     public Result save(@RequestBody DishDTO dishDTO){
@@ -31,6 +37,10 @@ public class DishController {
         log.info("新增菜品：{}", dishDTO);
 
         dishService.saveWithFlavor(dishDTO);
+
+
+        String key = "dish_" + dishDTO.getCategoryId();
+        redisTemplate.delete(key);
 
         return Result.success();
     }
@@ -59,6 +69,10 @@ public class DishController {
         log.info("菜品删除：{}", ids);
 
         dishService.deleteBatch(ids);
+
+        // 清理所有dish数据
+        Set keys = redisTemplate.keys("dish_");
+        redisTemplate.delete(keys);
 
 
         return Result.success();
@@ -92,7 +106,32 @@ public class DishController {
 
         dishService.updateWithFlavor(dishDTO);
 
+        Set keys = redisTemplate.keys("dish_");
+        redisTemplate.delete(keys);
+
         return Result.success();
+    }
+
+    @PostMapping("/status/{status}")
+    @ApiOperation("起售、停售接口")
+    public Result startOrStop(@PathVariable Integer status, Long id){
+
+        log.info("起售、停售接口：{}，{}", status, id);
+
+        dishService.startOrStop(status, id);
+
+
+        return Result.success();
+    }
+
+    @GetMapping("/list")
+    @ApiOperation("根据分类id查询菜品接口")
+    public Result<List<Dish>> list(Long categoryId){
+        log.info("根据分类id查询菜品接口：{}", categoryId);
+
+        List<Dish> list = dishService.list(categoryId);
+
+        return Result.success(list);
     }
 
 }
