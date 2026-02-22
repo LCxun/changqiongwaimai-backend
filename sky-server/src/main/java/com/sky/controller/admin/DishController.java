@@ -71,7 +71,7 @@ public class DishController {
         dishService.deleteBatch(ids);
 
         // 清理所有dish数据
-        Set keys = redisTemplate.keys("dish_");
+        Set keys = redisTemplate.keys("dish_*");
         redisTemplate.delete(keys);
 
 
@@ -106,7 +106,7 @@ public class DishController {
 
         dishService.updateWithFlavor(dishDTO);
 
-        Set keys = redisTemplate.keys("dish_");
+        Set keys = redisTemplate.keys("dish_*");
         redisTemplate.delete(keys);
 
         return Result.success();
@@ -119,6 +119,9 @@ public class DishController {
         log.info("起售、停售接口：{}，{}", status, id);
 
         dishService.startOrStop(status, id);
+
+        Set keys = redisTemplate.keys("dish_*");
+        redisTemplate.delete(keys);
 
 
         return Result.success();
