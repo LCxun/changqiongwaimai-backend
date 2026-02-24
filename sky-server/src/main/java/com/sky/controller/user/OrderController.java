@@ -59,7 +59,7 @@ public class OrderController {
 
     @GetMapping("/orderDetail/{id}")
     @ApiOperation("订单详情")
-    public Result<OrderVO> details(@PathVariable Integer id){
+    public Result<OrderVO> details(@PathVariable Long id){
         OrderVO orderVO = orderService.details(id);
         return Result.success(orderVO);
     }
@@ -78,6 +78,13 @@ public class OrderController {
         OrderPaymentVO orderPaymentVO = orderService.payment(ordersPaymentDTO);
         log.info("生成预支付交易单：{}", orderPaymentVO);
         return Result.success(orderPaymentVO);
+    }
+
+    @PutMapping("/cancel/{id}")
+    @ApiOperation("取消订单")
+    public Result cancel(@PathVariable Long id){
+        orderService.cancel(id);
+        return Result.success();
     }
 
 

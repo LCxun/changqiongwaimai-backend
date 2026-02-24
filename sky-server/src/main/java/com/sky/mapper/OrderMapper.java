@@ -13,10 +13,13 @@ public interface OrderMapper {
     Page<Orders> pageQuery(OrdersPageQueryDTO ordersPageQueryDTO);
 
     @Select("select * from orders where id=#{id}")
-    Orders getById(Integer id);
+    Orders getById(Long id);
 
     @Select("select * from orders where number = #{orderNumber}")
     Orders getByNumber(String outTradeNo);
 
     void update(Orders orders);
+
+    @Select("select count(id) from orders where status = #{status}")
+    Integer countStatus(Integer toBeConfirmed);
 }
